@@ -1,0 +1,261 @@
+openapi: 3.0.0
+info:
+  title: Status Page
+  version: 1.0.0
+servers:
+  - url: http://{{base_url}}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+tags:
+  - name: Users
+  - name: Services
+  - name: Incidents
+  - name: Incidents Updates
+  - name: Organizations
+  - name: User-Organization
+paths:
+  /api/v1/users/register:
+    post:
+      tags:
+        - Users
+      summary: register user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Akansha
+                email: akansha@gmail.com
+                password: '12345678'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/users/me:
+    get:
+      tags:
+        - Users
+      summary: My profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/users/login:
+    post:
+      tags:
+        - Users
+      summary: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: abhi@gmail.com
+                password: '12345678'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/services:
+    post:
+      tags:
+        - Services
+      summary: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Database
+                type: API
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: org-id
+          in: header
+          schema:
+            type: string
+          example: '{{ORG_ID}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/incidents:
+    post:
+      tags:
+        - Incidents
+      summary: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                title: API Outage
+                description: >-
+                  Our main API is currently unavailable due to a database issue.
+                  Engineers are investigating.
+                status: INVESTIGATING
+                isScheduled: false
+                startedAt: '2025-04-13T10:15:00.000Z'
+                resolvedAt: '2025-04-13T12:45:00.000Z'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: org-id
+          in: header
+          schema:
+            type: string
+          example: '{{ORG_ID}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Incidents
+      summary: list
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: org-id
+          in: header
+          schema:
+            type: string
+          example: '{{ORG_ID}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/incident-update:
+    post:
+      tags:
+        - Incidents Updates
+      summary: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                incidentId: cm9ers4if0001zw8g608dwbgq
+                message: Bugs had been fixed!
+                status: RESOLVED
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: org-id
+          in: header
+          schema:
+            type: string
+          example: '{{ORG_ID}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/incident-update/cm9espu500003zwl32f7dpzd5:
+    delete:
+      tags:
+        - Incidents Updates
+      summary: list
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: org-id
+          in: header
+          schema:
+            type: string
+          example: '{{ORG_ID}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/organizations:
+    post:
+      tags:
+        - Organizations
+      summary: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Abhishek's Org
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Organizations
+      summary: organizations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/user-organization/members/unassigned:
+    get:
+      tags:
+        - User-Organization
+      summary: unassigned users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: org-id
+          in: header
+          schema:
+            type: string
+          example: '{{ORG_ID}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/user-organization/members:
+    post:
+      tags:
+        - User-Organization
+      summary: add user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                userId: cm9eok73n0000zwyd0227f9i8
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: org-id
+          in: header
+          schema:
+            type: string
+          example: '{{ORG_ID}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}

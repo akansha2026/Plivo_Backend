@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const organizations_1 = require("../controllers/organizations");
+const auth_1 = require("../middlewares/auth");
+const headers_1 = require("../middlewares/headers");
+const router = (0, express_1.Router)();
+router.get("/", auth_1.authenticate, organizations_1.getOrganizations);
+router.get("/current", auth_1.authenticate, headers_1.requireOrgHeader, auth_1.requireOrgMember, organizations_1.getOrganizationById);
+router.post("/", auth_1.authenticate, auth_1.requireSuperUser, organizations_1.createOrganization);
+router.put("/", auth_1.authenticate, headers_1.requireOrgHeader, auth_1.requireOrgAdmin, organizations_1.updateOrganization);
+router.delete("/", auth_1.authenticate, headers_1.requireOrgHeader, auth_1.requireOrgAdmin, organizations_1.deleteOrganization);
+exports.default = router;

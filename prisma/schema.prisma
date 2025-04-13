@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+model User {
+  id                   String             @id @default(cuid())
+  email                String             @unique
+  password             String
+  name                 String?
+  defaultOrgId         String?           
+  defaultOrg           Organization?      @relation("DefaultOrg", fields: [defaultOrgId], references: [id])
+  role                 UserRole           @default(USER)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  createdOrganizations Organization[]     @relation("CreatedOrganizations")
+  memberships          UserOrganization[]
+
+  Incident Incident[]
+
+  IncidentUpdate IncidentUpdate[]
+}
+
+model Organization {
+  id            String             @id @default(cuid())
+  name          String
+  createdBy     String
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  createdByUser User               @relation("CreatedOrganizations", fields: [createdBy], references: [id])
+  users         UserOrganization[]
+  services      Service[]
+  incidents     Incident[]
+  defaultUsers  User[]            @relation("DefaultOrg")
+}
+
+model UserOrganization {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  role           OrgRole  @default(MEMBER)
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([userId, organizationId])
+}
+
+model Service {
+  id             String        @id @default(cuid())
+  name           String
+  type           ServiceType   @default(OTHER)
+  status         ServiceStatus @default(OPERATIONAL)
+  organizationId String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization  Organization      @relation(fields: [organizationId], references: [id])
+  incidents     Incident[]        // Changed to many-to-one (Service can have many incidents)
+
+  @@unique([name, organizationId])
+}
+
+model Incident {
+  id             String         @id @default(cuid())
+  title          String
+  description    String
+  status         IncidentStatus @default(INVESTIGATING)
+  serviceId      String
+  startedAt      DateTime
+  resolvedAt     DateTime?
+  organizationId String
+  createdBy      String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization Organization      @relation(fields: [organizationId], references: [id])
+  service       Service          @relation(fields: [serviceId], references: [id]) // Many-to-one: multiple incidents can belong to one service
+  creator       User             @relation(fields: [createdBy], references: [id])
+  updates       IncidentUpdate[]
+}
+
+model IncidentUpdate {
+  id         String         @id @default(cuid())
+  incidentId String
+  message    String
+  status     IncidentStatus
+  createdBy  String
+  createdAt  DateTime       @default(now())
+
+  incident Incident @relation(fields: [incidentId], references: [id])
+  user     User     @relation(fields: [createdBy], references: [id])
+}
+
+
+enum OrgRole {
+  ADMIN
+  MEMBER
+}
+
+enum ServiceStatus {
+  OPERATIONAL
+  DEGRADED
+  PARTIAL_OUTAGE
+  MAJOR_OUTAGE
+}
+
+enum IncidentStatus {
+  INVESTIGATING
+  IDENTIFIED
+  MONITORING
+  RESOLVED
+  SCHEDULED
+}
+
+enum UserRole {
+  SUPERUSER
+  USER
+}
+
+enum ServiceType {
+  WEBSITE
+  API
+  DATABASE
+  CACHE
+  STORAGE
+  AUTHENTICATION
+  PAYMENT_GATEWAY
+  EMAIL
+  CDN
+  BACKEND
+  OTHER
+}
