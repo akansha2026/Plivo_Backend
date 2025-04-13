@@ -21,8 +21,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Swagger route
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // API routes
 app.use("/api/v1/organizations", orgRoutes);
