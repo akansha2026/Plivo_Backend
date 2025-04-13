@@ -7,8 +7,6 @@ exports.io = void 0;
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const swagger_1 = require("./swagger");
 const organizations_1 = __importDefault(require("./routes/organizations"));
 const services_1 = __importDefault(require("./routes/services"));
 const incidents_1 = __importDefault(require("./routes/incidents"));
@@ -23,8 +21,6 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-// Swagger route
-app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerSpec));
 // API routes
 app.use("/api/v1/organizations", organizations_1.default);
 app.use("/api/v1/services", services_1.default);

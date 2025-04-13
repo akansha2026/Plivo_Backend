@@ -1,8 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './swagger';
 import orgRoutes from './routes/organizations';
 import serviceRoutes from './routes/services';
 import incidentRoutes from './routes/incidents';
